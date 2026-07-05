@@ -69,9 +69,31 @@ st.info('logggginnn')
 
 bar = st.progress(0)
 for i in range(1,101):
-  time.sleep(0.1)
+  #time.sleep(0.1)
   bar.progress(i)
 
 
 #Taking User Input.............................................
 
+email = st.text_input('enter email')
+number = st.number_input('enter age')
+date = st.date_input('enter dob')
+
+btn = st.button('login')
+
+#if btn get clicked then perform this action
+if btn:
+  st.success('Login Done')
+  st.balloons()
+  #to print on screen
+  st.write(email)
+
+#dropdown
+st.selectbox('select gender',['m','f'])
+
+#file uploder
+file= st.file_uploader('upload a csv file')
+
+if file is not None:
+  df = pd.read_csv(file)
+  st.dataframe(df.head(10))
