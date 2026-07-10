@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 df= pd.read_csv('F:\Pythonn\startup-dashboard\startup_cleaned.csv')
 #data cleaning...............
@@ -16,9 +18,12 @@ def load_investor_details(investor):
 
 
   #biggest investments
-  big_df = df[df['investors'].str.contains(investor)].groupby('startup')['amount'].sum().sort_values(ascending = False).head()
+  big_series = df[df['investors'].str.contains(investor)].groupby('startup')['amount'].sum().sort_values(ascending = False).head()
   st.subheader('Biggest Investments')
-  st.dataframe(big_df)
+  fig,ax = plt.subplots()
+  ax.bar(big_series.index,big_series.values)
+  st.pyplot(fig)
+  
 
 
 
