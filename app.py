@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 st.set_page_config(layout = 'wide',page_title='Startup Analysis')
 
 df= pd.read_csv('F:\Pythonn\startup-dashboard\startup_cleaned.csv')
+df['date'] = pd.to_datetime(df['date'],errors='coerce')
+df['month'] = df['date'].dt.month
+df['year'] = df['date'].dt.year
 #data cleaning...............
 # df['Investors Name']=df['Investors Name'].fillna('Undisclosed')
 
@@ -33,18 +36,18 @@ def load_overall_analysis():
     st.metric('Funded Startup',num_startup)
 
   st.header('MoM graph')
-    selected_option = st.selectbox('Select Type',['Total','Count'])
-    if selected_option == 'Total':
-        temp_df = df.groupby(['year', 'month'])['amount'].sum().reset_index()
-    else:
-        temp_df = df.groupby(['year', 'month'])['amount'].count().reset_index()
+  selected_option = st.selectbox('Select Type',['Total','Count'])
+  if selected_option == 'Total':
+      temp_df = df.groupby(['year', 'month'])['amount'].sum().reset_index()
+  else:
+      temp_df = df.groupby(['year', 'month'])['amount'].count().reset_index()
 
-    temp_df['x_axis'] = temp_df['month'].astype('str') + '-' + temp_df['year'].astype('str')
+  temp_df['x_axis'] = temp_df['month'].astype('str') + '-' + temp_df['year'].astype('str')
 
-    fig3, ax3 = plt.subplots()
-    ax3.plot(temp_df['x_axis'], temp_df['amount'])
+  fig3, ax3 = plt.subplots()
+  ax3.plot(temp_df['x_axis'], temp_df['amount'])
 
-    st.pyplot(fig3)
+  st.pyplot(fig3)
 
 
 
@@ -123,9 +126,7 @@ option = st.sidebar.selectbox('Select One', ['Overall Analysis','StartUp', 'Inve
 
 if option == 'Overall Analysis':
   
-  btn0 = st.sidebar.button('Show Overall Analysis')
-  if btn0:
-    load_overall_analysis()
+  load_overall_analysis()
 elif option == 'StartUp':
   st.sidebar.selectbox('Select startup',sorted(df['startup'].unique()))
   btn1 = st.sidebar.button('Find Startup Details')
