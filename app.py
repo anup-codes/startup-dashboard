@@ -8,6 +8,47 @@ df= pd.read_csv('F:\Pythonn\startup-dashboard\startup_cleaned.csv')
 #data cleaning...............
 # df['Investors Name']=df['Investors Name'].fillna('Undisclosed')
 
+def load_overall_analysis():
+  st.title('Overall Analysis')
+
+  #total invested amount
+  total = round(df['amount'].sum())
+  #maximum amount infused in a startup
+  max_funding = df.groupby('startup')['amount'].max().sort_values(ascending = False).max()
+  #average ticket size
+  avg_funding = round(df.groupby('startup')['amount'].sum().mean())
+  #total funded startup
+  num_startup = df['startup'].nunique()
+
+
+  col1,col2,col3,col4 = st.columns(4)
+
+  with col1:
+    st.metric('Total',str(total) + 'cr')
+  with col2:
+    st.metric('Max Funding',str(max_funding) + 'cr')
+  with col3:
+    st.metric('Average Funding',str(avg_funding)+'cr')
+  with col4:
+    st.metric('Funded Startup',num_startup)
+
+  st.header('MoM graph')
+    selected_option = st.selectbox('Select Type',['Total','Count'])
+    if selected_option == 'Total':
+        temp_df = df.groupby(['year', 'month'])['amount'].sum().reset_index()
+    else:
+        temp_df = df.groupby(['year', 'month'])['amount'].count().reset_index()
+
+    temp_df['x_axis'] = temp_df['month'].astype('str') + '-' + temp_df['year'].astype('str')
+
+    fig3, ax3 = plt.subplots()
+    ax3.plot(temp_df['x_axis'], temp_df['amount'])
+
+    st.pyplot(fig3)
+
+
+
+
 def load_investor_details(investor):
  
   st.title(investor)
@@ -81,7 +122,10 @@ option = st.sidebar.selectbox('Select One', ['Overall Analysis','StartUp', 'Inve
 
 
 if option == 'Overall Analysis':
-  st.title('Overall Analysis')
+  
+  btn0 = st.sidebar.button('Show Overall Analysis')
+  if btn0:
+    load_overall_analysis()
 elif option == 'StartUp':
   st.sidebar.selectbox('Select startup',sorted(df['startup'].unique()))
   btn1 = st.sidebar.button('Find Startup Details')
