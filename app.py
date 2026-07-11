@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
+st.set_page_config(layout = 'wide',page_title='Startup Analysis')
 
 df= pd.read_csv('F:\Pythonn\startup-dashboard\startup_cleaned.csv')
 #data cleaning...............
@@ -16,15 +17,62 @@ def load_investor_details(investor):
   st.subheader('Most Recent Investments')
   st.dataframe(last5_df)
 
+  col1, col2 = st.columns(2)
+  with col1:
 
-  #biggest investments
-  big_series = df[df['investors'].str.contains(investor)].groupby('startup')['amount'].sum().sort_values(ascending = False).head()
-  st.subheader('Biggest Investments')
-  fig,ax = plt.subplots()
-  ax.bar(big_series.index,big_series.values)
-  st.pyplot(fig)
+     #biggest investments
+    big_series = df[df['investors'].str.contains(investor)].groupby('startup')['amount'].sum().sort_values(ascending = False).head()
+    st.subheader('Biggest Investments')
+    fig,ax = plt.subplots()
+    ax.bar(big_series.index,big_series.values)
+    st.pyplot(fig)
+
+  with col2:
+    vertical_series = df[df['investors'].str.contains(investor)].groupby('vertical')['amount'].sum()
+
+    st.subheader('Sectors invested')
+    fig1,ax1 = plt.subplots()
+    ax1.pie(vertical_series,labels = vertical_series.index,autopct='%0.01f%%')
+    st.pyplot(fig1)
   
+  col3, col4 = st.columns(2)
+  with col3:
+    round_series = df[df['investors'].str.contains(investor)].groupby('round')['amount'].sum()
 
+    st.subheader('Stages funding')
+    fig2,ax2 = plt.subplots()
+    ax2.pie(round_series,labels = round_series.index,autopct='%0.01f%%')
+    st.pyplot(fig2)
+  
+  with col4:
+    city_series = df[df['investors'].str.contains(investor)].groupby('city')['amount'].sum()
+
+    st.subheader('Cities Invested')
+    fig3,ax3 = plt.subplots()
+    ax3.pie(city_series,labels = city_series.index,autopct='%0.01f%%')
+    st.pyplot(fig3)
+
+#year wise investment 
+  df['date'] = pd.to_datetime(df['date'],errors= 'coerce')
+
+  df['year'] = df['date'].dt.year
+  year_series = df[df['investors'].str.contains(investor)].groupby('year')['amount'].sum()
+  
+  st.subheader('Year Wise Investment')
+  fig4,ax4 = plt.subplots()
+  ax4.plot(year_series.index,year_series.values)
+  st.pyplot(fig4)
+#similar investors
+  st.subheader('Similar Investor')
+  for i in range(0, 3):
+    for j in range(0, 2):
+        try:
+            st.text(
+                list(df[df['investors'].str.contains(investor)]['investors'])[i]
+                .split(',')[j]
+            )
+        except IndexError:
+            st.text(".....")
 
 
 
@@ -46,5 +94,4 @@ else:
   if btn2:
     load_investor_details(selected_investor)
   
-
 
